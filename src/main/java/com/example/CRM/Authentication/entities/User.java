@@ -33,7 +33,7 @@ public class User {
     private Date birthdate;
     private Long cin;
     //@Column(columnDefinition = "INTEGER DEFAULT 1")
-    private Integer accountstatus =1; //0 = deleted / 1 = active / 2 = suspended
+    private Integer accountstatus; //0 = deleted / 1 = active / 2 = suspended
     //@Column(columnDefinition = "INTEGER DEFAULT 0")
 
     @CreationTimestamp

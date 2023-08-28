@@ -49,6 +49,7 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    System.out.println(userRepository.existsByUsername(loginRequest.getUsername()));
     if (!userRepository.existsByUsername(loginRequest.getUsername())) {
       return ResponseEntity.badRequest().body("Nom d'utilisateur inexistant!");
     }

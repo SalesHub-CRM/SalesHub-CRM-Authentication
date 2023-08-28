@@ -1,4 +1,4 @@
-package com.example.CRM.Authentication.Authentication;
+package com.example.CRM.Authentication;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
