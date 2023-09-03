@@ -3,11 +3,13 @@ package com.example.CRM.Authentication.controllers;
 import com.example.CRM.Authentication.dto.requests.LoginRequest;
 import com.example.CRM.Authentication.dto.requests.UserSignupRequest;
 import com.example.CRM.Authentication.dto.responses.LoginResponse;
+import com.example.CRM.Authentication.dto.responses.UserResponseDTO;
 import com.example.CRM.Authentication.entities.*;
 import com.example.CRM.Authentication.repositories.RoleRepository;
 import com.example.CRM.Authentication.repositories.UserRepository;
 import com.example.CRM.Authentication.security.jwt.JwtUtils;
 import com.example.CRM.Authentication.services.UserDetailsImpl;
+import com.example.CRM.Authentication.services.UserServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -46,6 +48,9 @@ public class AuthController {
 
   @Autowired
   JwtUtils jwtUtils;
+
+  @Autowired
+  UserServiceImp userServiceImp;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -86,6 +91,7 @@ public class AuthController {
                       userDetails.getBirthdate(),
                       userDetails.getCin(),
                       userDetails.getAccountstatus(),
+                      userDetails.getGroupId(),
                       userDetails.getCreatedat(),
                       userDetails.getUpdatedat(),
                       jwtCookie.toString(),
@@ -119,6 +125,7 @@ public class AuthController {
     utilisateur.setBirthdate(signUpRequest.getBirthdate());
     utilisateur.setCin(signUpRequest.getCin());
     utilisateur.setAccountstatus(1);
+    utilisateur.setGroupId(signUpRequest.getGroupId());
     //utilisateur.setConfirmaccount(false);
 
     System.out.println(utilisateur);
@@ -164,4 +171,23 @@ public class AuthController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body("You've been signed out!");
   }
+
+
+  @GetMapping("/getUser/{id}")
+  public UserResponseDTO getUserById(@PathVariable("id") Long id)
+  {
+    return userServiceImp.getUserById(id);
+  }
+
+
+  @GetMapping("/listUsers")
+  public List<UserResponseDTO>listUsers(){
+    return userServiceImp.listUsers();
+  }
+
+  @GetMapping("listByGroupId/{id}")
+  public List<UserResponseDTO>listUsersByGroupId(@PathVariable("id") Long id){
+    return userServiceImp.listUsersByGroupId(id);
+  }
+
 }

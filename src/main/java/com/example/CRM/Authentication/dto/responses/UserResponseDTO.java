@@ -1,25 +1,21 @@
-package com.example.CRM.Authentication.dto.requests;
+package com.example.CRM.Authentication.dto.responses;
+
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class UserSignupRequest {
+@NoArgsConstructor
+public class UserResponseDTO {
     private Long id;
     private String firstname;
     private String lastname;
     private String username;
     private String email;
-    private String password;
     private Long phone;
     private String gender;
     private String city;
@@ -27,9 +23,8 @@ public class UserSignupRequest {
     private String fulladress;
     private Date birthdate;
     private Long cin;
-    private Integer accountstatus;
+    private Integer accountstatus; //0 = deleted / 1 = active / 2 = suspended
     private Long groupId;
     private Date createdat;
     private Date updatedat;
-    private Set<String> roles = new HashSet<>();
 }

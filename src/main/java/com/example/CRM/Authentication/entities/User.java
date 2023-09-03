@@ -35,7 +35,7 @@ public class User {
     //@Column(columnDefinition = "INTEGER DEFAULT 1")
     private Integer accountstatus; //0 = deleted / 1 = active / 2 = suspended
     //@Column(columnDefinition = "INTEGER DEFAULT 0")
-
+    private Long groupId;
     @CreationTimestamp
     private Date createdat;
     @UpdateTimestamp
@@ -51,7 +51,7 @@ public class User {
     // getters and setters
 
 
-    public User(Long id, String firstname, String lastname, String email, String password, Long phone, String city, Long zipcode, String fulladress, Date birthdate, Long cin, int accountstatus, Date createdat, Date updatedat) {
+    public User(Long id, String firstname, String lastname, String email, String password, Long phone, String city, Long zipcode, String fulladress, Date birthdate, Long cin, int accountstatus, Long groupId, Date createdat, Date updatedat) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -64,6 +64,7 @@ public class User {
         this.birthdate = birthdate;
         this.cin = cin;
         this.accountstatus = accountstatus;
+        this.groupId = groupId;
         this.createdat = createdat;
         this.updatedat = updatedat;
     }
