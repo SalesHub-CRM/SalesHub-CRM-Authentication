@@ -29,8 +29,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@CrossOrigin(origins = "http://localhost:3000")
+//@CrossOrigin(origins = "http://localhost:3000")
 @RestController
+//@CrossOrigin("*")
 //@CrossOrigin(origins = "${baseUrl}",allowCredentials ="true",allowedHeaders = "*")
 @RequestMapping("/auth")
 public class AuthController {
@@ -167,6 +168,7 @@ public class AuthController {
 
   @PostMapping("/signout")
   public ResponseEntity<?> logoutUtilisateur() {
+    System.out.println("logout");
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body("You've been signed out!");
