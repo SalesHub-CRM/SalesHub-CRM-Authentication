@@ -31,6 +31,7 @@ public class UserDetailsImpl implements UserDetails {
   private Date birthdate;
   private Long cin;
   private Integer accountstatus;
+  private boolean confirmaccount;
   private Long groupId;
   private Date createdat;
   private Date updatedat;
@@ -39,7 +40,7 @@ public class UserDetailsImpl implements UserDetails {
 
   public UserDetailsImpl(Long id, String firstname,String lastname, String username, String email, String password, Long phone,
                          String gender, String city, Long zipcode,String fulladress, Date birthdate, Long cin, Integer accountstatus,
-                         Long groupId,Date createdat,Date updatedat,Collection<? extends GrantedAuthority> authorities) {
+                         boolean confirmaccount,Long groupId,Date createdat,Date updatedat,Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.firstname = firstname;
     this.lastname = lastname;
@@ -54,6 +55,7 @@ public class UserDetailsImpl implements UserDetails {
     this.birthdate = birthdate;
     this.cin = cin;
     this.accountstatus = accountstatus;
+    this.confirmaccount=confirmaccount;
     this.groupId=groupId;
     this.createdat=createdat;
     this.updatedat=updatedat;
@@ -80,6 +82,7 @@ public class UserDetailsImpl implements UserDetails {
         user.getBirthdate(),
         user.getCin(),
         user.getAccountstatus(),
+        user.isConfirmaccount(),
         user.getGroupId(),
         user.getCreatedat(),
         user.getUpdatedat(),
@@ -138,6 +141,7 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   public Long getGroupId() {return groupId;}
+  public boolean getConfirmaccount(){return confirmaccount;}
 
   public Date getCreatedat() {
     return createdat;

@@ -5,12 +5,17 @@ import com.example.CRM.Authentication.dto.requests.UserSignupRequest;
 import com.example.CRM.Authentication.dto.responses.LoginResponse;
 import com.example.CRM.Authentication.dto.responses.UserResponseDTO;
 import com.example.CRM.Authentication.entities.*;
+import com.example.CRM.Authentication.event.RegistrationCompleteEvent;
 import com.example.CRM.Authentication.repositories.RoleRepository;
 import com.example.CRM.Authentication.repositories.UserRepository;
 import com.example.CRM.Authentication.security.jwt.JwtUtils;
 import com.example.CRM.Authentication.services.UserDetailsImpl;
 import com.example.CRM.Authentication.services.UserServiceImp;
+import com.example.CRM.Authentication.token.VerificationToken;
+import com.example.CRM.Authentication.token.VerificationTokenRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +42,10 @@ import java.util.stream.Collectors;
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
+  @Autowired
+  ApplicationEventPublisher publisher;
+  @Autowired
+  VerificationTokenRepository tokenRepository;
 
   @Autowired
   UserRepository userRepository;
@@ -92,6 +101,7 @@ public class AuthController {
                       userDetails.getBirthdate(),
                       userDetails.getCin(),
                       userDetails.getAccountstatus(),
+                      userDetails.getConfirmaccount(),
                       userDetails.getGroupId(),
                       userDetails.getCreatedat(),
                       userDetails.getUpdatedat(),
@@ -101,7 +111,7 @@ public class AuthController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody UserSignupRequest signUpRequest) {
+  public ResponseEntity<?> registerUser(@Valid @RequestBody UserSignupRequest signUpRequest, final HttpServletRequest request) {
     System.out.println("hello");
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest().body("Error: Username is already taken!");
@@ -127,7 +137,7 @@ public class AuthController {
     utilisateur.setCin(signUpRequest.getCin());
     utilisateur.setAccountstatus(1);
     utilisateur.setGroupId(signUpRequest.getGroupId());
-    //utilisateur.setConfirmaccount(false);
+    utilisateur.setConfirmaccount(false);
 
     System.out.println(utilisateur);
 
@@ -160,7 +170,9 @@ public class AuthController {
     utilisateur.setRoles(roles);
     userRepository.save(utilisateur);
 
-    return ResponseEntity.ok("ADMIN registered successfully!");
+    publisher.publishEvent(new RegistrationCompleteEvent(utilisateur,applicationUrl(request)));
+
+    return ResponseEntity.ok("Account registered successfully! please check your email for the verification link!");
   }
 
 
@@ -190,6 +202,29 @@ public class AuthController {
   @GetMapping("listByGroupId/{id}")
   public List<UserResponseDTO>listUsersByGroupId(@PathVariable("id") Long id){
     return userServiceImp.listUsersByGroupId(id);
+  }
+
+
+  @GetMapping("/verifyEmail")
+  public String verifyEmail(@RequestParam("token") String token) {
+    VerificationToken verificationToken = tokenRepository.findByToken(token);
+    if(verificationToken.getUser().isConfirmaccount()){
+      return "This email has already been verified. Please log in.";
+    }
+
+    String verificationResults = userServiceImp.validateToken(token);
+    if(verificationResults.equalsIgnoreCase("valid")){
+      return "Email verified successfully, You can now log in to your account";
+    }
+
+    return "Invalid verification token";
+
+  }
+
+
+
+  public String applicationUrl(HttpServletRequest request) {
+    return "http://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath();
   }
 
 }

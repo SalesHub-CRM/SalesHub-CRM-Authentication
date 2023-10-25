@@ -27,7 +27,6 @@ public class UserSignupRequest {
     private String fulladress;
     private Date birthdate;
     private Long cin;
-    private Integer accountstatus;
     private Long groupId;
     private Date createdat;
     private Date updatedat;

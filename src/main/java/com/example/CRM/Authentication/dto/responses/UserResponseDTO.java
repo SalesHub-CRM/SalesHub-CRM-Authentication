@@ -24,6 +24,7 @@ public class UserResponseDTO {
     private Date birthdate;
     private Long cin;
     private Integer accountstatus; //0 = deleted / 1 = active / 2 = suspended
+    private boolean confirmaccount;
     private Long groupId;
     private Date createdat;
     private Date updatedat;

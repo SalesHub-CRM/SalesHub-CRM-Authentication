@@ -30,6 +30,7 @@ public class UserMapper {
         userResponseDTO.setBirthdate(user.getBirthdate());
         userResponseDTO.setCin(user.getCin());
         userResponseDTO.setAccountstatus(user.getAccountstatus());
+        userResponseDTO.setConfirmaccount(user.isConfirmaccount());
         userResponseDTO.setGroupId(user.getGroupId());
         userResponseDTO.setCreatedat(user.getCreatedat());
         userResponseDTO.setUpdatedat(user.getUpdatedat());

@@ -4,20 +4,25 @@ import com.example.CRM.Authentication.dto.mapper.UserMapper;
 import com.example.CRM.Authentication.dto.responses.UserResponseDTO;
 import com.example.CRM.Authentication.entities.User;
 import com.example.CRM.Authentication.repositories.UserRepository;
+import com.example.CRM.Authentication.token.VerificationToken;
+import com.example.CRM.Authentication.token.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Service
 public class UserServiceImp implements UserService{
 
     private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     @Autowired
-    public UserServiceImp (UserRepository userRepository)
+    public UserServiceImp (UserRepository userRepository,VerificationTokenRepository verificationTokenRepository)
     {
         this.userRepository=userRepository;
+        this.verificationTokenRepository=verificationTokenRepository;
     }
 
     @Override
@@ -38,6 +43,7 @@ public class UserServiceImp implements UserService{
         userResponseDTO.setBirthdate(user.getBirthdate());
         userResponseDTO.setCin(user.getCin());
         userResponseDTO.setAccountstatus(user.getAccountstatus());
+        userResponseDTO.setConfirmaccount(user.isConfirmaccount());
         userResponseDTO.setGroupId(user.getGroupId());
         userResponseDTO.setCreatedat(user.getCreatedat());
         userResponseDTO.setUpdatedat(user.getUpdatedat());
@@ -58,5 +64,32 @@ public class UserServiceImp implements UserService{
         UserMapper userMapper = new UserMapper();
 
         return userMapper.convertToDTOList(users);
+    }
+
+    @Override
+    public void saveUserVerificationToken(User user,String token){
+        var verificationToken = new VerificationToken(token, user);
+        verificationTokenRepository.save(verificationToken);
+    }
+
+    @Override
+    public String validateToken(String token){
+        VerificationToken newToken = verificationTokenRepository.findByToken(token);
+
+        if(newToken==null){
+            return "invalid verification token";
+        }
+
+        User user = newToken.getUser();
+        Calendar calendar = Calendar.getInstance();
+
+        if((newToken.getExpirationTime().getTime()-calendar.getTime().getTime())<=0){
+            verificationTokenRepository.delete(newToken);
+            return "this token has already expired";
+        }
+
+        user.setConfirmaccount(true);
+        userRepository.save(user);
+        return "valid";
     }
 }
